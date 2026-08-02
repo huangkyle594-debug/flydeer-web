@@ -10,35 +10,37 @@ const DOC_LINKS = [
 
 export function SiteFooter() {
   return (
-    <Layout.Footer className="border-t border-line !py-6">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-xs text-fg-faint">
-        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+    <Layout.Footer className="border-t border-line !py-3">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-y-2 text-xs text-fg-faint sm:grid-cols-[1fr_auto_1fr] sm:gap-x-4">
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:justify-start">
           {DOC_LINKS.map((item) => (
             <Link key={item.to} to={item.to} className="text-fg-mute hover:text-accent">
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-          {/* 备案号为占位，上线前替换为真实备案信息 */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <a
             href="https://beian.miit.gov.cn/"
             target="_blank"
             rel="noreferrer"
             className="hover:text-fg-mute"
           >
-            京ICP备XXXXXXXX号-X
+            沪ICP备2026035340号-1
           </a>
+          {/* 公安备案号为占位，拿到后替换 */}
           <a
             href="https://beian.mps.gov.cn/"
             target="_blank"
             rel="noreferrer"
             className="hover:text-fg-mute"
           >
-            京公网安备XXXXXXXXXXXXX号
+            沪公网安备XXXXXXXXXXXXX号
           </a>
         </div>
-        <div>© {new Date().getFullYear()} fly-deer.com 版权所有</div>
+        <div className="text-center sm:justify-self-end sm:text-right">
+          © {new Date().getFullYear()} fly-deer.com 版权所有
+        </div>
       </div>
     </Layout.Footer>
   )

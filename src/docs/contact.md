@@ -4,7 +4,7 @@
 
 | 渠道 | 信息 |
 |---|---|
-| 电子邮箱 | support@fly-deer.com（占位，待替换） |
+| 电子邮箱 | [sd_hws@sjtu.alumni.edu.cn](mailto:sd_hws@sjtu.alumni.edu.cn) |
 | 工作时间 | 工作日 9:00 – 18:00 |
 
 ## 反馈建议

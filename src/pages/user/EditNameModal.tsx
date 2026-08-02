@@ -27,6 +27,9 @@ export function EditNameModal({ open, onClose }: { open: boolean; onClose: () =>
     } catch (err) {
       if (isApiError(err) && err.code === ErrorCode.BAD_REQUEST) {
         form.setFields([{ name: 'name', errors: [errorText(err)] }])
+      } else if (isApiError(err) && err.code === ErrorCode.NEED_VERIFY) {
+        message.warning('请先绑定手机号完成实名，再修改昵称')
+        onClose()
       } else {
         message.error(errorText(err, '昵称更新失败'))
       }

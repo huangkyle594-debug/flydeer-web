@@ -22,17 +22,17 @@ export type UserProfileVO = {
   phone: string | null
 }
 
-/** MANAGING=我代理的（我是代理人）；MANAGED=代理我的（我是被代理人） */
-export type DelegateRelation = 'MANAGING' | 'MANAGED'
+/** DELEGATOR=我代理的（我是代理人）；DELEGATED=代理我的（我是被代理人） */
+export type DelegateRelation = 'DELEGATOR' | 'DELEGATED'
 
 /** 注意：运行时枚举是 REVOKE（非 REVOKED） */
 export type DelegateStatus = 'PENDING' | 'ACCEPTED' | 'REVOKE'
 
 export type DelegateVO = {
   /** 代理人 ID */
-  userId: number
+  delegatorId: number
   /** 被代理人 ID */
-  grantedUserId: number
+  delegatedId: number
   status: DelegateStatus
   /** ISO-8601 Instant */
   updatedAt: string

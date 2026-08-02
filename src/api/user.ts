@@ -7,7 +7,10 @@ export function getMe(config?: AxiosRequestConfig): Promise<UserProfileVO> {
   return apiGet<UserProfileVO>('/api/v1/user/me', config)
 }
 
-/** 更新昵称（≤20 字符），返回最新资料 */
+/**
+ * 更新昵称（≤20 字符），返回最新资料。
+ * 需已实名（Token verified=true），否则 403 NEED_VERIFY。
+ */
 export function updateName(name: string): Promise<UserProfileVO> {
   return apiPost<UserProfileVO>('/api/v1/user/me/update', { name })
 }

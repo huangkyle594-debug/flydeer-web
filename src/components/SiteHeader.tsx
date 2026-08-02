@@ -1,12 +1,44 @@
-import { App, Avatar, Button, Dropdown, Layout } from 'antd'
-import { CaretDownFilled, CheckOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import { App, Avatar, Button, Dropdown, Layout, Tooltip } from 'antd'
+import {
+  CheckOutlined,
+  GithubOutlined,
+  LogoutOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import { Link, NavLink, useNavigate } from 'react-router'
 import { useAuth } from '@/auth/AuthContext'
+import { GiteeOutlined } from '@/components/icons/GiteeOutlined'
 import { showError } from '@/lib/apiError'
 
 const NAV_ITEMS = [
   { to: '/', label: '首页' },
   { to: '/doc', label: '文档' },
+]
+
+/** 外部跳转：站外链接新开标签页，邮箱调起邮件 App */
+const SOCIAL_LINKS = [
+  {
+    key: 'github',
+    label: 'GitHub',
+    href: 'https://github.com/huangkyle594-debug',
+    icon: <GithubOutlined />,
+    external: true,
+  },
+  {
+    key: 'gitee',
+    label: 'Gitee',
+    href: 'https://gitee.com/huangkyle594',
+    icon: <GiteeOutlined />,
+    external: true,
+  },
+  {
+    key: 'email',
+    label: '发邮件给我',
+    href: 'mailto:sd_hws@sjtu.alumni.edu.cn',
+    icon: <MailOutlined />,
+    external: false,
+  },
 ]
 
 export function SiteHeader() {
@@ -44,6 +76,20 @@ export function SiteHeader() {
               {item.label}
             </NavLink>
           ))}
+          <div className="ml-6 flex items-center gap-1.5">
+            {SOCIAL_LINKS.map((link) => (
+              <Tooltip key={link.key} title={link.label}>
+                <a
+                  href={link.href}
+                  aria-label={link.label}
+                  {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-line-strong bg-surface-2 !text-sm !text-fg-mute transition-colors hover:border-accent-deep hover:bg-surface-3 hover:!text-accent"
+                >
+                  {link.icon}
+                </a>
+              </Tooltip>
+            ))}
+          </div>
         </nav>
       </div>
 
@@ -74,7 +120,7 @@ export function SiteHeader() {
               ],
             }}
           >
-            {/* 头像：蓝底白字首字符；右下角标提示可展开菜单，左下角绿色对号表示已实名 */}
+            {/* 头像：蓝底白字首字符；右下绿色对号表示已实名（hover 显示「已实名」） */}
             <button
               type="button"
               aria-label={`${user.name} 的账户菜单`}
@@ -86,14 +132,11 @@ export function SiteHeader() {
               {user.verified && (
                 <span
                   title="已实名"
-                  className="absolute -bottom-px -left-px z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-surface-1"
+                  className="absolute -bottom-px -right-px z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-surface-1"
                 >
                   <CheckOutlined className="!text-[8px] !text-white" />
                 </span>
               )}
-              <span className="absolute -bottom-px -right-px z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-surface-3 ring-2 ring-surface-1">
-                <CaretDownFilled className="!text-[8px] !text-fg-mute" />
-              </span>
             </button>
           </Dropdown>
         ) : (

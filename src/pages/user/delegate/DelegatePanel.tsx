@@ -15,11 +15,11 @@ const STATUS_OPTIONS: { value: DelegateStatus; label: string }[] = [
 
 /**
  * 代理授权管理：
- * - MANAGING 我代理的（我是代理人），可发起、撤销、重新发起
- * - MANAGED 代理我的（我是被代理人），可接受、拒绝、撤销
+ * - DELEGATOR 我代理的（我是代理人），可发起、撤销、重新发起
+ * - DELEGATED 代理我的（我是被代理人），可接受、拒绝、撤销
  */
 export function DelegatePanel() {
-  const [relation, setRelation] = useState<DelegateRelation>('MANAGING')
+  const [relation, setRelation] = useState<DelegateRelation>('DELEGATOR')
   const [statusFilter, setStatusFilter] = useState<DelegateStatus[]>([])
   const [list, setList] = useState<DelegateVO[]>([])
   const [loading, setLoading] = useState(false)
@@ -47,8 +47,8 @@ export function DelegatePanel() {
         activeKey={relation}
         onChange={(key) => setRelation(key as DelegateRelation)}
         items={[
-          { key: 'MANAGING', label: '我代理的' },
-          { key: 'MANAGED', label: '代理我的' },
+          { key: 'DELEGATOR', label: '我代理的' },
+          { key: 'DELEGATED', label: '代理我的' },
         ]}
         tabBarExtraContent={
           <div className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export function DelegatePanel() {
               maxTagCount="responsive"
             />
             <Button icon={<ReloadOutlined />} onClick={reload} aria-label="刷新" />
-            {relation === 'MANAGING' && (
+            {relation === 'DELEGATOR' && (
               <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
                 发起代理
               </Button>

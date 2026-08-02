@@ -6,7 +6,7 @@
 
 | 渠道 | 信息 |
 |---|---|
-| 投诉邮箱 | complaint@fly-deer.com（占位，待替换） |
+| 投诉邮箱 | [sd_hws@sjtu.alumni.edu.cn](mailto:sd_hws@sjtu.alumni.edu.cn) |
 
 ## 投诉须知
 

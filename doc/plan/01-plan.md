@@ -88,10 +88,10 @@ DelegatePanel 双 Tab + 状态多选筛选 + 发起按钮。操作矩阵：
 
 | 视角 | 状态 | 操作 |
 |---|---|---|
-| MANAGING（我是代理人，对方=grantedUserId） | PENDING/ACCEPTED | 撤销 revoke(relation:MANAGING) |
-| MANAGING | REVOKE | 重新发起 create |
-| MANAGED（我是被代理人，对方=userId） | PENDING | 接受 accept(operateId=**发起方** userId) / 拒绝 revoke(relation:MANAGED) |
-| MANAGED | ACCEPTED | 撤销 revoke(relation:MANAGED) |
+| DELEGATOR（我是代理人，对方=delegatedId） | PENDING/ACCEPTED | 撤销 revoke(relation:DELEGATOR) |
+| DELEGATOR | REVOKE | 重新发起 create |
+| DELEGATED（我是被代理人，对方=delegatorId） | PENDING | 接受 accept(operateId=**发起方** delegatorId) / 拒绝 revoke(relation:DELEGATED) |
+| DELEGATED | ACCEPTED | 撤销 revoke(relation:DELEGATED) |
 
 CreateDelegateModal：输入对方 userId，本地拦截 `operateId===自己`（41010 兜底）。`51020`（并发状态变化）→ 提示 + 自动重拉。注意枚举是 **`REVOKE`** 不是 REVOKED。
 

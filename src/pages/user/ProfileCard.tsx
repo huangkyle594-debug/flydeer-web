@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Card, Descriptions, Tag, Tooltip, Typography } from 'antd'
+import { App, Button, Card, Descriptions, Tag, Tooltip, Typography } from 'antd'
 import { EditOutlined, GithubOutlined, MobileOutlined } from '@ant-design/icons'
 import { useAuth } from '@/auth/AuthContext'
 import { GiteeOutlined } from '@/components/icons/GiteeOutlined'
@@ -14,6 +14,7 @@ const CHANNEL_META: Record<LoginChannel, { label: string; icon?: React.ReactNode
 }
 
 export function ProfileCard() {
+  const { message } = App.useApp()
   const { user } = useAuth()
   const [editNameOpen, setEditNameOpen] = useState(false)
   const [bindPhoneOpen, setBindPhoneOpen] = useState(false)
@@ -23,6 +24,19 @@ export function ProfileCard() {
   const channel = CHANNEL_META[user.channel]
   // 仅 OAuth 渠道且未实名的用户展示绑手机入口（PHONE 渠道后端会拒绝，前端直接关门）
   const canBindPhone = user.channel !== 'PHONE' && !user.verified
+
+  const handleEditName = () => {
+    if (!user.verified) {
+      if (canBindPhone) {
+        message.info('请先绑定手机号完成实名，再修改昵称')
+        setBindPhoneOpen(true)
+      } else {
+        message.warning('需完成实名后才能修改昵称')
+      }
+      return
+    }
+    setEditNameOpen(true)
+  }
 
   return (
     <Card title="基本信息" className="!border-line-strong">
@@ -35,13 +49,15 @@ export function ProfileCard() {
         <Descriptions.Item label="昵称">
           <span className="flex items-center gap-2">
             {user.name}
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => setEditNameOpen(true)}
-              aria-label="修改昵称"
-            />
+            <Tooltip title={user.verified ? '修改昵称' : '需先完成实名'}>
+              <Button
+                type="text"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={handleEditName}
+                aria-label="修改昵称"
+              />
+            </Tooltip>
           </span>
         </Descriptions.Item>
         <Descriptions.Item label="登录方式">

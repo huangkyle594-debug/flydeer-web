@@ -21,16 +21,16 @@ type Props = {
 
 /**
  * 代理关系列表。对方 ID 取决于视角：
- * - MANAGING：我是代理人（row.userId），对方 = grantedUserId（被代理人）
- * - MANAGED：我是被代理人（row.grantedUserId），对方 = userId（代理人）
+ * - DELEGATOR：我是代理人（row.delegatorId），对方 = delegatedId（被代理人）
+ * - DELEGATED：我是被代理人（row.delegatedId），对方 = delegatorId（代理人）
  */
 export function DelegateTable({ relation, list, loading, onChanged }: Props) {
   const { message } = App.useApp()
-  // 行级操作 loading："<userId>-<grantedUserId>-<action>"
+  // 行级操作 loading："<delegatorId>-<delegatedId>-<action>"
   const [actingKey, setActingKey] = useState<string | null>(null)
 
-  const counterpartId = (row: DelegateVO) => (relation === 'MANAGING' ? row.grantedUserId : row.userId)
-  const rowKey = (row: DelegateVO) => `${row.userId}-${row.grantedUserId}`
+  const counterpartId = (row: DelegateVO) => (relation === 'DELEGATOR' ? row.delegatedId : row.delegatorId)
+  const rowKey = (row: DelegateVO) => `${row.delegatorId}-${row.delegatedId}`
 
   const runAction = async (row: DelegateVO, action: string, fn: () => Promise<unknown>, successText: string) => {
     setActingKey(`${rowKey(row)}-${action}`)
@@ -54,7 +54,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
     const other = counterpartId(row)
     const acting = (action: string) => actingKey === `${rowKey(row)}-${action}`
 
-    if (relation === 'MANAGING') {
+    if (relation === 'DELEGATOR') {
       // 我是代理人视角
       if (row.status === 'PENDING' || row.status === 'ACCEPTED') {
         return (
@@ -63,7 +63,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
             okText="撤销"
             cancelText="取消"
             okButtonProps={{ danger: true }}
-            onConfirm={() => runAction(row, 'revoke', () => revokeDelegate(other, 'MANAGING'), '已撤销')}
+            onConfirm={() => runAction(row, 'revoke', () => revokeDelegate(other, 'DELEGATOR'), '已撤销')}
           >
             <Button size="small" danger loading={acting('revoke')}>
               撤销
@@ -83,7 +83,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
       )
     }
 
-    // MANAGED：我是被代理人视角
+    // DELEGATED：我是被代理人视角
     if (row.status === 'PENDING') {
       return (
         <span className="flex gap-2">
@@ -103,7 +103,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
             okText="拒绝"
             cancelText="取消"
             okButtonProps={{ danger: true }}
-            onConfirm={() => runAction(row, 'reject', () => revokeDelegate(other, 'MANAGED'), '已拒绝')}
+            onConfirm={() => runAction(row, 'reject', () => revokeDelegate(other, 'DELEGATED'), '已拒绝')}
           >
             <Button size="small" danger loading={acting('reject')}>
               拒绝
@@ -120,7 +120,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
           okText="撤销"
           cancelText="取消"
           okButtonProps={{ danger: true }}
-          onConfirm={() => runAction(row, 'revoke', () => revokeDelegate(other, 'MANAGED'), '已撤销')}
+          onConfirm={() => runAction(row, 'revoke', () => revokeDelegate(other, 'DELEGATED'), '已撤销')}
         >
           <Button size="small" danger loading={acting('revoke')}>
             撤销
@@ -133,7 +133,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
 
   const columns: ColumnsType<DelegateVO> = [
     {
-      title: relation === 'MANAGING' ? '被代理人 ID' : '代理人 ID',
+      title: relation === 'DELEGATOR' ? '被代理人 ID' : '代理人 ID',
       key: 'counterpart',
       render: (_, row) => <Typography.Text copyable>{String(counterpartId(row))}</Typography.Text>,
     },
@@ -163,7 +163,7 @@ export function DelegateTable({ relation, list, loading, onChanged }: Props) {
       pagination={false}
       size="middle"
       scroll={{ x: 560 }}
-      locale={{ emptyText: relation === 'MANAGING' ? '暂无代理关系，点击右上角发起' : '暂无代理关系' }}
+      locale={{ emptyText: relation === 'DELEGATOR' ? '暂无代理关系，点击右上角发起' : '暂无代理关系' }}
     />
   )
 }

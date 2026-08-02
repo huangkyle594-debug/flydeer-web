@@ -42,7 +42,7 @@ Controller 通过参数注解 `@AuthCheck` 解析身份：
 | 认证类（发码、登录、OAuth、刷新） | 匿名可访问（可不带 Token） |
 | 用户 / 委托类 | 必须已登录（`AUTHENTICATED`） |
 
-未登录访问受保护接口时，通常返回 **HTTP 401**。需要「已校验」而 Token 未 verified 时为 **HTTP 403**（当前用户三件套接口未强制 VERIFIED）。
+未登录访问受保护接口时，通常返回 **HTTP 401**。需要「已校验」而 Token 未 verified 时为 **HTTP 403**（`NEED_VERIFY`）。改昵称接口要求已实名（`verified=true`）。
 
 ### 1.3 通用枚举
 
@@ -58,8 +58,8 @@ Controller 通过参数注解 `@AuthCheck` 解析身份：
 
 | 值 | 含义 |
 |---|---|
-| `MANAGING` | 我代理的（我是代理人） |
-| `MANAGED` | 代理我的（我是被代理人） |
+| `DELEGATOR` | 我代理的（我是代理人） |
+| `DELEGATED` | 代理我的（我是被代理人） |
 
 **DelegateStatusEnum**
 
@@ -95,8 +95,8 @@ Controller 通过参数注解 `@AuthCheck` 解析身份：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `userId` | long | 代理人 ID |
-| `grantedUserId` | long | 被代理人 ID |
+| `delegatorId` | long | 代理人 ID |
+| `delegatedId` | long | 被代理人 ID |
 | `status` | string | 见委托状态枚举 |
 | `updatedAt` | string (ISO-8601 Instant) | 最后更新时间 |
 
@@ -274,9 +274,11 @@ curl http://localhost:8080/api/v1/user/me \
 ### 3.2 更新昵称
 
 - **路由**：`POST /api/v1/user/me/update`
-- **鉴权**：已登录
+- **鉴权**：已登录且已实名（Token `verified=true`）
 - **逻辑**：更新名称后返回最新资料
-- **注意**：名称最长 **20** 个字符
+- **注意**：
+  - 名称最长 **20** 个字符
+  - 未实名返回 **HTTP 403**（`NEED_VERIFY`）；未实名用户应先完成绑手机
 
 **Request Body**
 
@@ -347,14 +349,14 @@ curl http://localhost:8080/api/v1/user/me \
 
 ```json
 {
-  "relation": "MANAGING",
+  "relation": "DELEGATOR",
   "status": ["PENDING", "ACCEPTED"]
 }
 ```
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `relation` | 是 | `MANAGING` \| `MANAGED` |
+| `relation` | 是 | `DELEGATOR` \| `DELEGATED` |
 | `status` | 否 | 状态数组；省略或空 = 全部 |
 
 **Response `data`**：`DelegateVO[]`
@@ -408,14 +410,14 @@ curl http://localhost:8080/api/v1/user/me \
 ```json
 {
   "operateId": 10000001,
-  "relation": "MANAGING"
+  "relation": "DELEGATOR"
 }
 ```
 
 | 当前用户身份 | relation | operateId 含义 |
 |---|---|---|
-| 代理人撤销 | `MANAGING` | 被代理人 ID |
-| 被代理人撤销 | `MANAGED` | 代理人 ID |
+| 代理人撤销 | `DELEGATOR` | 被代理人 ID |
+| 被代理人撤销 | `DELEGATED` | 代理人 ID |
 
 **Response `data`**：`null`
 
@@ -432,7 +434,7 @@ curl http://localhost:8080/api/v1/user/me \
 | 刷新 | POST | `/api/v1/auth/refresh` | 否 | 读/写 |
 | 登出 | POST | `/api/v1/auth/logout` | 否 | 清 |
 | 我的资料 | GET | `/api/v1/user/me` | 是 | 否 |
-| 改昵称 | POST | `/api/v1/user/me/update` | 是 | 否 |
+| 改昵称 | POST | `/api/v1/user/me/update` | 是（需实名） | 否 |
 | 绑手机发码 | POST | `/api/v1/user/me/phone/send` | 是 | 否 |
 | 绑手机提交 | POST | `/api/v1/user/me/phone/bind` | 是 | 写 |
 | 查委托 | POST | `/api/v1/user/delegate/query` | 是 | 否 |
@@ -460,11 +462,11 @@ type UserProfileVO = {
 };
 
 type DelegateVO = {
-  userId: number;
-  grantedUserId: number;
+  delegatorId: number;
+  delegatedId: number;
   status: 'PENDING' | 'ACCEPTED' | 'REVOKE';
   updatedAt: string;
 };
 
-type DelegateRelation = 'MANAGING' | 'MANAGED';
+type DelegateRelation = 'DELEGATOR' | 'DELEGATED';
 ```
