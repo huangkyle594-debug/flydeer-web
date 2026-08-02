@@ -56,19 +56,19 @@ export function SiteHeader() {
   }
 
   return (
-    <Layout.Header className="sticky top-0 z-10 flex items-center justify-between border-b border-line !px-4 sm:!px-6">
-      <div className="flex items-center gap-8">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="飞天小鹭" className="h-8 w-8 rounded" />
-          <span className="text-lg font-semibold text-fg">飞天小鹭</span>
+    <Layout.Header className="flex !h-14 flex-nowrap items-center justify-between gap-2 border-b border-line !px-3 !leading-none sm:!h-16 sm:!px-6">
+      <div className="flex min-w-0 flex-nowrap items-center gap-3 sm:gap-8">
+        <Link to="/" className="flex shrink-0 flex-nowrap items-center gap-2 whitespace-nowrap">
+          <img src="/logo.png" alt="飞天小鹭" className="h-8 w-8 shrink-0 rounded" />
+          <span className="text-lg font-semibold whitespace-nowrap text-fg">飞天小鹭</span>
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex min-w-0 flex-nowrap items-center gap-0.5 sm:gap-1">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `rounded-md px-3 py-1.5 text-sm transition-colors ${
+                `rounded-md px-2 py-1.5 text-sm whitespace-nowrap transition-colors sm:px-3 ${
                   isActive ? 'bg-surface-3 text-accent' : 'text-fg-mute hover:bg-surface-2 hover:text-fg'
                 }`
               }
@@ -76,7 +76,7 @@ export function SiteHeader() {
               {item.label}
             </NavLink>
           ))}
-          <div className="ml-6 flex items-center gap-1.5">
+          <div className="ml-1 flex shrink-0 items-center gap-1 sm:ml-2 sm:gap-1.5">
             {SOCIAL_LINKS.map((link) => (
               <Tooltip key={link.key} title={link.label}>
                 <a
@@ -93,7 +93,7 @@ export function SiteHeader() {
         </nav>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex shrink-0 items-center">
         {status === 'authenticated' && user ? (
           <Dropdown
             menu={{

@@ -39,7 +39,7 @@ export function SiteFooter() {
           </a>
         </div>
         <div className="text-center sm:justify-self-end sm:text-right">
-          © {new Date().getFullYear()} fly-deer.com 版权所有
+          © {new Date().getFullYear()} kyle 版权所有
         </div>
       </div>
     </Layout.Footer>

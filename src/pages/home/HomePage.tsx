@@ -1,7 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons'
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import authorMessage from '@/docs/author-message.md?raw'
+import { HomeHero } from './HomeHero'
 
 type ProjectItem = {
   key: string
@@ -29,8 +27,9 @@ const SECTION_TITLE_CLASS = 'mb-6 text-xl font-semibold text-fg'
 
 export function HomePage() {
   return (
-    <div className="flex flex-col gap-14 py-8">
-      {/* 主功能区：各项目介绍与跳转 */}
+    <div className="flex flex-col gap-8 pb-8">
+      <HomeHero />
+
       <section>
         <h2 className={SECTION_TITLE_CLASS}>产品与工具</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -57,14 +56,6 @@ export function HomePage() {
               </div>
             ),
           )}
-        </div>
-      </section>
-
-      {/* 作者寄语：内容来自 src/docs/author-message.md，直接编辑该文件即可 */}
-      <section>
-        <h2 className={SECTION_TITLE_CLASS}>作者寄语</h2>
-        <div className="doc-prose rounded-xl border border-line-strong bg-surface-1 px-6 py-1 sm:px-8">
-          <Markdown remarkPlugins={[remarkGfm]}>{authorMessage}</Markdown>
         </div>
       </section>
     </div>

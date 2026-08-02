@@ -116,4 +116,159 @@
     border-top: 1px solid var(--color-line);
     margin: 1.5rem 0;
   }
+
+  .site-marquee-track {
+    animation: site-marquee 28s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-marquee-track {
+      animation: none;
+    }
+  }
+}
+
+@keyframes site-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* 首页题词：毛笔艺术字 + 代码残影 */
+@layer components {
+  .home-hero {
+    background: transparent;
+  }
+
+  /*
+   * 背景代码：左右滚动 + 椭圆透明度蒙层（对齐 logo 周围红圈区域）
+   * 蒙层中心最高不透明度由外层 opacity: 0.6 封顶，边缘渐隐。
+   */
+  .home-hero-code {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.6;
+    -webkit-mask-image: radial-gradient(
+      ellipse 19% 88% at 50% 42%,
+      #000 0%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 19% 88% at 50% 42%,
+      #000 0%,
+      transparent 100%
+    );
+  }
+
+  /* 多行重叠铺满题词区高度，横向仍保持稀疏 */
+  .home-hero-code-rows {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 0;
+    padding-block: 0.25rem;
+  }
+
+  .home-hero-code-track {
+    display: flex;
+    width: max-content;
+    margin-block: -0.2rem;
+    animation: home-hero-code-scroll 48s linear infinite;
+  }
+
+  .home-hero-code-track:nth-child(2n) {
+    margin-left: 2.75rem;
+  }
+  .home-hero-code-track:nth-child(3n) {
+    margin-left: 1.25rem;
+  }
+  .home-hero-code-track:nth-child(4n) {
+    margin-left: 3.5rem;
+  }
+  .home-hero-code-track:nth-child(5n) {
+    margin-left: 0.75rem;
+  }
+
+  .home-hero-code-track--reverse {
+    animation-name: home-hero-code-scroll-reverse;
+  }
+
+  .home-hero-code-strip {
+    display: flex;
+    align-items: center;
+    gap: 8.5rem;
+    padding: 0 4rem;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(0.7rem, 1.3vw, 0.82rem);
+    letter-spacing: 0.06em;
+    color: var(--color-accent-deep);
+    white-space: nowrap;
+  }
+
+  .home-hero-code-strip span {
+    display: inline-block;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+  .home-hero-code-track:nth-child(odd) .home-hero-code-strip span:nth-child(odd) {
+    color: var(--color-accent);
+    opacity: 0.95;
+  }
+
+  .home-hero-title {
+    font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+    font-size: clamp(1.35rem, 3.8vw, 2.25rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.12em;
+    color: var(--color-fg);
+  }
+
+  .home-hero-horizon {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-accent-deep) 20%,
+      var(--color-accent) 50%,
+      var(--color-accent-deep) 80%,
+      transparent
+    );
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-code-track {
+      animation: none !important;
+    }
+  }
+}
+
+@keyframes home-hero-code-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes home-hero-code-scroll-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
