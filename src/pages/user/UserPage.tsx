@@ -3,6 +3,7 @@ import { LockOutlined } from '@ant-design/icons'
 import { useAuth } from '@/auth/AuthContext'
 import { ProfileCard } from './ProfileCard'
 import { DelegatePanel } from './delegate/DelegatePanel'
+import { CancelAccountCard } from './CancelAccountCard'
 
 /**
  * 账户管理页。登录守卫：未登录仅显示提示卡片，不跳转；
@@ -40,6 +41,7 @@ export function UserPage() {
       <h1 className="text-2xl font-semibold text-fg">账户管理</h1>
       <ProfileCard />
       <DelegatePanel />
+      <CancelAccountCard />
     </div>
   )
 }

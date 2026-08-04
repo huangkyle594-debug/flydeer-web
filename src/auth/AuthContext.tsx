@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { JwtTokenVO, OauthProvider, UserProfileVO } from '@/types/api'
-import { getMe } from '@/api/user'
+import { cancelMe, getMe } from '@/api/user'
 import { getOauthAuthorizeUrl, loginBySms as loginBySmsApi, logoutApi } from '@/api/auth'
 import { tokenStore } from '@/lib/tokenStore'
 import { LoginModal } from './LoginModal'
@@ -21,6 +21,8 @@ interface AuthContextValue {
   /** OAuth 回调页调用：存 token→拉资料→返回 returnTo 路径 */
   completeOauth: (accessToken: string) => Promise<string>
   logout: () => Promise<void>
+  /** 注销账号：物理删除 → 清本地 token（服务端已清 refresh cookie） */
+  cancelAccount: () => Promise<void>
   /** 改名/绑手机后重拉资料 */
   refreshProfile: () => Promise<void>
   /** 绑手机成功后替换本地 token（新 token verified=true） */
@@ -108,6 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const cancelAccount = useCallback(async () => {
+    try {
+      await cancelMe() // 服务端删除账号并清 refresh cookie
+    } finally {
+      tokenStore.clear()
+    }
+  }, [])
+
   const refreshProfile = useCallback(async () => {
     const profile = await getMe()
     setUser(profile)
@@ -126,10 +136,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginByOauth,
       completeOauth,
       logout,
+      cancelAccount,
       refreshProfile,
       applyNewToken,
     }),
-    [status, user, openLogin, loginBySms, loginByOauth, completeOauth, logout, refreshProfile, applyNewToken],
+    [
+      status,
+      user,
+      openLogin,
+      loginBySms,
+      loginByOauth,
+      completeOauth,
+      logout,
+      cancelAccount,
+      refreshProfile,
+      applyNewToken,
+    ],
   )
 
   return (

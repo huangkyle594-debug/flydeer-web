@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const PHRASE = '一场AI时代传统程序员的赎罪'
+const PHRASE = 'AI时代的学思做'
 
 const ROW_COUNT = 8
 const WORDS_PER_ROW = 4

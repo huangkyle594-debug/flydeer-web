@@ -27,3 +27,11 @@ export function sendBindPhoneSms(phone: string): Promise<null> {
 export function bindPhone(phone: string, code: string): Promise<JwtTokenVO> {
   return apiPost<JwtTokenVO>('/api/v1/user/me/phone/bind', { phone, code }, { withCredentials: true })
 }
+
+/**
+ * 注销当前账号（物理删除）。
+ * 服务端清除 refresh cookie；前端另需清本地 accessToken。
+ */
+export function cancelMe(): Promise<null> {
+  return apiPost<null>('/api/v1/user/me/cancel', null, { withCredentials: true })
+}

@@ -1,10 +1,10 @@
-# 12-用户服务-api
+# 用户服务 API
 
 > 面向前端 / 前端 AI 联调的接口说明。覆盖 `AuthController`、`UserController`、`DelegateController`。  
-> **暂不包含错误码清单**（尚未定稿）。HTTP 状态与统一响应结构见本文「约定」一节。
+> 错误码与 HTTP 映射见 [flydeer-user-errorcode.md](./flydeer-user-errorcode.md)。HTTP 状态与统一响应结构见本文「约定」一节。
 
-**Base URL（本地默认）**：`http://localhost:8080`
-**线上域名 **：`www.fly-deer.com`
+**Base URL（本地默认）**：`http://localhost:8080`  
+**线上域名**：`www.fly-deer.com`
 
 ---
 
@@ -24,7 +24,7 @@
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `code` | int | `0` 表示成功；非 0 为业务/错误码（细节后续补充） |
+| `code` | int | `0` 表示成功；非 0 为业务错误码，见 [flydeer-user-errorcode.md](./flydeer-user-errorcode.md) |
 | `message` | string | 提示文案 |
 | `data` | object / array / null | 成功时的载荷；无数据时可为 `null` |
 
@@ -40,9 +40,10 @@ Controller 通过参数注解 `@AuthCheck` 解析身份：
 | 接口类型 | 典型要求 |
 |---|---|
 | 认证类（发码、登录、OAuth、刷新） | 匿名可访问（可不带 Token） |
-| 用户 / 委托类 | 必须已登录（`AUTHENTICATED`） |
+| 用户 / 委托类 | 必须已登录（`AUTHENTICATED`）；改昵称要求已实名（`VERIFIED`） |
+| 管理员类（禁用账户等） | 必须已登录且 userId ∈ `app.user.admin-ids`（`ADMIN`） |
 
-未登录访问受保护接口时，通常返回 **HTTP 401**。需要「已校验」而 Token 未 verified 时为 **HTTP 403**（`NEED_VERIFY`）。改昵称接口要求已实名（`verified=true`）。
+未登录访问受保护接口时，通常返回 **HTTP 401**。需要「已校验」而 Token 未 verified 时为 **HTTP 403**（改昵称接口要求 `VERIFIED`）。
 
 ### 1.3 通用枚举
 
@@ -274,11 +275,9 @@ curl http://localhost:8080/api/v1/user/me \
 ### 3.2 更新昵称
 
 - **路由**：`POST /api/v1/user/me/update`
-- **鉴权**：已登录且已实名（Token `verified=true`）
+- **鉴权**：已登录且已实名（`VERIFIED`）
 - **逻辑**：更新名称后返回最新资料
-- **注意**：
-  - 名称最长 **20** 个字符
-  - 未实名返回 **HTTP 403**（`NEED_VERIFY`）；未实名用户应先完成绑手机
+- **注意**：名称最长 **20** 个字符
 
 **Request Body**
 
@@ -331,6 +330,58 @@ curl http://localhost:8080/api/v1/user/me \
 ```
 
 **Response `data`**：`JwtTokenVO`
+
+---
+
+### 3.5 禁用账户（管理员）
+
+- **路由**：`POST /api/v1/user/disable`
+- **鉴权**：已登录且当前用户 ID 在 `app.user.admin-ids` 中（`ADMIN`）；非管理员返回 **HTTP 403**
+- **逻辑**：将目标用户 `status` 置为禁用（`0`），并发布 `UserDisabledEvent`；委托撤销等波及操作由各 Service 异步监听处理
+- **注意**：
+  - 已禁用则幂等成功（不再发事件）
+  - 已签发的 Access Token 在过期前仍可能可用；登录与 refresh 会立即拒绝
+  - 委托关系撤销为事务提交后的异步副作用，接口返回时可能尚未完成
+
+**Request Body**
+
+```json
+{
+  "operatorId": 10000001
+}
+```
+
+**Response `data`**：`null`
+
+```bash
+curl -X POST http://localhost:8080/api/v1/user/disable \
+  -H 'Authorization: Bearer <adminAccessToken>' \
+  -H 'Content-Type: application/json' \
+  -d '{"operatorId":10000001}'
+```
+
+---
+
+### 3.6 注销自己的账号
+
+- **路由**：`POST /api/v1/user/me/cancel`
+- **鉴权**：已登录
+- **逻辑**：物理删除当前用户记录，并发布 `UserDeletedEvent`；各 Service 异步处理波及数据（如删除全部代理关系），并清除 Refresh Cookie
+- **注意**：
+  - 与管理员「禁用」不同：注销是删除账号，不是改 `status`
+  - 删除后同渠道身份可重新注册
+  - 前端应同时清除本地 Access Token
+  - 代理关系物理删除为事务提交后的异步副作用
+
+**Request Body**：无
+
+**Response `data`**：`null`
+
+```bash
+curl -X POST http://localhost:8080/api/v1/user/me/cancel \
+  -H 'Authorization: Bearer <accessToken>' \
+  -c cookies.txt -b cookies.txt
+```
 
 ---
 
@@ -434,9 +485,11 @@ curl http://localhost:8080/api/v1/user/me \
 | 刷新 | POST | `/api/v1/auth/refresh` | 否 | 读/写 |
 | 登出 | POST | `/api/v1/auth/logout` | 否 | 清 |
 | 我的资料 | GET | `/api/v1/user/me` | 是 | 否 |
-| 改昵称 | POST | `/api/v1/user/me/update` | 是（需实名） | 否 |
+| 改昵称 | POST | `/api/v1/user/me/update` | 是 | 否 |
 | 绑手机发码 | POST | `/api/v1/user/me/phone/send` | 是 | 否 |
 | 绑手机提交 | POST | `/api/v1/user/me/phone/bind` | 是 | 写 |
+| 注销账号 | POST | `/api/v1/user/me/cancel` | 是 | 清 |
+| 管理员禁用 | POST | `/api/v1/user/disable` | 是（ADMIN） | 否 |
 | 查委托 | POST | `/api/v1/user/delegate/query` | 是 | 否 |
 | 发起委托 | POST | `/api/v1/user/delegate/create` | 是 | 否 |
 | 接受委托 | POST | `/api/v1/user/delegate/accept` | 是 | 否 |
