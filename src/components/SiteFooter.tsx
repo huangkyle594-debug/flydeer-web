@@ -21,21 +21,21 @@ export function SiteFooter() {
         </nav>
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <a
+            href="https://beian.mps.gov.cn/#/query/webSearch?code=31010502008046"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 hover:text-fg-mute"
+          >
+            <img src="/beian-icon.png" alt="" width={16} height={18} className="shrink-0" />
+            沪公网安备31010502008046号
+          </a>
+          <a
             href="https://beian.miit.gov.cn/"
             target="_blank"
             rel="noreferrer"
             className="hover:text-fg-mute"
           >
             沪ICP备2026035340号-1
-          </a>
-          {/* 公安备案号为占位，拿到后替换 */}
-          <a
-            href="https://beian.mps.gov.cn/"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-fg-mute"
-          >
-            沪公网安备XXXXXXXXXXXXX号
           </a>
         </div>
         <div className="text-center sm:justify-self-end sm:text-right">

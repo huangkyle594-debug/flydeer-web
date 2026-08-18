@@ -39,4 +39,4 @@ npm run build   # 类型检查 + 生产构建（输出 dist/）
 
 - nginx 需将 `/`、`/user`、`/doc/*`、`/oauth/callback` 回落到本项目 `index.html`，`/api` 反代后端
 - 代理配置勿改写 `/api` 路径（refresh cookie 的 Path 依赖原样路径）
-- 页脚 ICP / 公安备案号为占位，上线前在 `src/components/SiteFooter.tsx` 替换
+- 页脚备案号在 `src/components/SiteFooter.tsx` 维护
