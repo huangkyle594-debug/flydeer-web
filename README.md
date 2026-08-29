@@ -17,7 +17,7 @@
 | `/doc` `/doc/:slug` | 支持文档：用户协议、服务条款、联系方式、投诉渠道 |
 | `/oauth/callback` | OAuth 登录回调落地页（需与后端 `AUTH_FRONTEND_REDIRECT` 配置一致） |
 
-`/struct-mind` 等页面由其他项目提供，生产环境经 nginx 按路径分发。
+`/struct-mind`、`/games` 等页面由其他项目提供，生产环境经 nginx 按路径分发。
 
 ## 开发
 

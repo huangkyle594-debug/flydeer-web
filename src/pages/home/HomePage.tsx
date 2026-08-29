@@ -8,13 +8,19 @@ type ProjectItem = {
   href?: string
 }
 
-/* /struct-mind 等由其他项目提供，用普通 <a> 整页跳转（nginx 按路径分发） */
+/* /struct-mind、/games 等由其他项目提供，用普通 <a> 整页跳转（nginx 按路径分发） */
 const PROJECTS: ProjectItem[] = [
   {
     key: 'struct-mind',
     title: '结构化思维导图',
     description: '以图组织思维，图中嵌图、层层深入，构建属于你的结构化知识网络。',
     href: '/struct-mind',
+  },
+  {
+    key: 'minesweeper',
+    title: '扫雷',
+    description: '经典 Windows 扫雷。自定义棋盘，并可在点击后自动逐步推演确定的格子。',
+    href: '/games/minesweeper',
   },
   {
     key: 'coming-1',
