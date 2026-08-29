@@ -20,7 +20,7 @@ const PROJECTS: ProjectItem[] = [
     key: 'minesweeper',
     title: '扫雷',
     description: '经典 Windows 扫雷。自定义棋盘，并可在点击后自动逐步推演确定的格子。',
-    href: '/games/minesweeper',
+    href: '/games/minesweeper/',
   },
   {
     key: 'coming-1',
